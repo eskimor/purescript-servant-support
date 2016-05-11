@@ -1,0 +1,21 @@
+{
+  "name": "purescript-servant-support",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "output"
+  ],
+  "dependencies": {
+    "purescript-console": "^0.1.0"
+  , "purescript-prelude": "*"
+  , "purescript-either": "*"
+  , "purescript-batteries": "*"
+  , "purescript-argonaut-core": "*"
+  , "purescript-globals": "*"
+  , "purescript-foldable-traversable": "*"
+  , "purescript-nullable": "*"
+  , "purescript-dom": "*"
+  , "purescript-affjax": "*"
+  }
+}
