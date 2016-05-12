@@ -35,28 +35,6 @@ data AjaxError =
   | InvalidData ForeignError
   | DecodingError String
 
-foreignToAjaxError :: forall a. Either ForeignError a -> Either AjaxError a
-foreignToAjaxError = lmap InvalidData
 
-getResult :: forall a m p. (Generic a, MonadError AjaxError m) => (Json -> Either String a) -> AffjaxResponse Foreign -> m a
-getResult decode resp = do
-  let stCode = case resp.status of StatusCode code -> code
-  fVal <- if stCode >= 200 && stCode < 300
-            then return resp.response
-            else throwError $ UnexpectedHTTPStatus resp
-  sVal <- throwLeft <<< lmap InvalidData <<< readString $ fVal
-  jVal <- throwLeft <<< lmap DecodingError <<< jsonParser $ sVal
-  throwLeft <<< lmap DecodingError <<< decode $ jVal
-
-throwLeft :: forall a e m. MonadError e m => Either e a -> m a
-throwLeft (Left e) = throwError e
-throwLeft (Right a) = return a
 
 type URLPiece = String
-
--- encodeListQuery :: forall a b. Generic a => Settings b -> String -> Array a -> String
-encodeListQuery opts fName = intercalate "&" <<< map (encodeQueryItem opts fName)
-
--- | The given name is assumed to be already escaped.
--- encodeQueryItem :: forall a b. Generic a => Settings b -> String -> a -> String
-encodeQueryItem opts fName val = fName <> "=" <> (encodeURIComponent <<< opts.toURLPiece) val
