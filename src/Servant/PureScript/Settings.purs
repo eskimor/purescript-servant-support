@@ -15,26 +15,14 @@ import Data.Foldable (intercalate)
 import Global (encodeURIComponent)
 import Data.Nullable (Nullable(), toNullable)
 import Data.Maybe (Maybe(..))
-import Network.HTTP.Affjax (AJAX, AffjaxResponse)
-import Network.HTTP.StatusCode (StatusCode(..))
-import Data.Foreign (ForeignError(), Foreign(), readString)
-import Data.Bifunctor (lmap)
-import Data.Argonaut.Parser (jsonParser)
 
 
-type Settings params = {
+
+newtype SPSettings_ params = SPSettings_ {
     encodeJson :: forall a. Generic a => a -> Json
   , decodeJson :: forall a. Generic a => Json -> Either String a
   , toURLPiece :: forall a. Generic a => a -> URLPiece
   , params :: params
   }
-
-
-data AjaxError =
-    UnexpectedHTTPStatus (AffjaxResponse Foreign)
-  | InvalidData ForeignError
-  | DecodingError String
-
-
 
 type URLPiece = String

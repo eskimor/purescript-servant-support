@@ -13,8 +13,10 @@ import Network.HTTP.StatusCode (StatusCode(..))
 import Data.Foreign (ForeignError(), Foreign(), readString)
 import Data.Bifunctor (lmap)
 import Data.Argonaut.Parser (jsonParser)
+import Unsafe.Coerce (unsafeCoerce) -- Make the type checker happy (I have to figure out why this is necessary.)
 
-import Servant.PureScript.Settings (AjaxError(DecodingError, InvalidData, UnexpectedHTTPStatus))
+import Servant.PureScript.Affjax (AjaxError(DecodingError, InvalidData, UnexpectedHTTPStatus))
+import Servant.PureScript.Settings (SPSettings_(SPSettings_))
 
 foreignToAjaxError :: forall a. Either ForeignError a -> Either AjaxError a
 foreignToAjaxError = lmap InvalidData
@@ -35,8 +37,8 @@ throwLeft (Right a) = return a
 
 
 -- encodeListQuery :: forall a b. Generic a => Settings b -> String -> Array a -> String
-encodeListQuery opts fName = intercalate "&" <<< map (encodeQueryItem opts fName)
+encodeListQuery opts'@(SPSettings_ opts) fName = intercalate "&" <<< map (encodeQueryItem opts' fName)
 
 -- | The given name is assumed to be already escaped.
--- encodeQueryItem :: forall a b. Generic a => Settings b -> String -> a -> String
-encodeQueryItem opts fName val = fName <> "=" <> (encodeURIComponent <<< opts.toURLPiece) val
+-- encodeQueryItem :: forall a b. Generic a => SPSettings_ b -> String -> a -> String
+encodeQueryItem (SPSettings_ opts) fName val = fName <> "=" <> (encodeURIComponent <<< unsafeCoerce opts.toURLPiece) val

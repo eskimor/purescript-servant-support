@@ -24,6 +24,16 @@ import Network.HTTP.Affjax (AJAX, AffjaxResponse)
 import Control.Monad.Eff (Eff())
 import Network.HTTP.StatusCode (StatusCode(..))
 import Data.Foreign (Foreign(), readString)
+import Network.HTTP.Affjax (AJAX, AffjaxResponse)
+import Network.HTTP.StatusCode (StatusCode(..))
+import Data.Foreign (ForeignError(), Foreign(), readString)
+import Data.Bifunctor (lmap)
+import Data.Argonaut.Parser (jsonParser)
+
+data AjaxError =
+    UnexpectedHTTPStatus (AffjaxResponse Foreign)
+  | InvalidData ForeignError
+  | DecodingError String
 
 
 type AjaxRequest =
