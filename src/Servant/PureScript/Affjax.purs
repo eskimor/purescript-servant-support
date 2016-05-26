@@ -29,11 +29,17 @@ import Network.HTTP.StatusCode (StatusCode(..))
 import Data.Foreign (ForeignError(), Foreign(), readString)
 import Data.Bifunctor (lmap)
 import Data.Argonaut.Parser (jsonParser)
+import Data.Generic (class Generic)
+
 
 data AjaxError =
-    UnexpectedHTTPStatus (AffjaxResponse Foreign)
-  | InvalidData ForeignError
+    UnexpectedHTTPStatus (AffjaxResponse String)
   | DecodingError String
+
+instance showAjaxError :: Show AjaxError where
+  show (UnexpectedHTTPStatus resp) = "An unexpected HTTP status was received: " <> show resp.status
+  show (DecodingError str) = "Decoding failed: " <> str
+
 
 
 type AjaxRequest =
@@ -51,7 +57,8 @@ defaultRequest :: AjaxRequest
 defaultRequest = {
     method : "GET"
   , url : ""
-  , headers : []
+  , headers : [ {field : "Accept", value : "application/json"}
+              , {field : "content-type", value : "application/json"}]
   , content : toNullable (Nothing :: Maybe String)
   , responseType : "json"
   , username : toNullable (Nothing :: Maybe String)
@@ -60,13 +67,13 @@ defaultRequest = {
   }
 
 
-affjax :: forall e. AjaxRequest -> Aff (ajax :: AJAX | e) (AffjaxResponse Foreign)
+affjax :: forall e. AjaxRequest -> Aff (ajax :: AJAX | e) (AffjaxResponse String)
 affjax = makeAff' <<< ajax
 
 ajax :: forall e.
      AjaxRequest
   -> (Error -> Eff (ajax :: AJAX | e) Unit)
-  -> (AffjaxResponse Foreign -> Eff (ajax :: AJAX | e) Unit)
+  -> (AffjaxResponse String -> Eff (ajax :: AJAX | e) Unit)
   -> Eff (ajax :: AJAX | e) (Canceler (ajax :: AJAX | e))
 ajax req eb cb = runFn5 _ajax responseHeader req cancelAjax eb cb
 
@@ -76,7 +83,7 @@ foreign import _ajax
                AjaxRequest
                (XMLHttpRequest -> Canceler (ajax :: AJAX | e))
                (Error -> Eff (ajax :: AJAX | e) Unit)
-               (AffjaxResponse Foreign -> Eff (ajax :: AJAX | e) Unit)
+               (AffjaxResponse String -> Eff (ajax :: AJAX | e) Unit)
                (Eff (ajax :: AJAX | e) (Canceler (ajax :: AJAX | e)))
 
 cancelAjax :: forall e. XMLHttpRequest -> Canceler (ajax :: AJAX | e)
