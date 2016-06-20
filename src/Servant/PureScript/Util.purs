@@ -22,14 +22,14 @@ getResult :: forall a m. (Generic a, MonadError AjaxError m) => (Json -> Either 
 getResult decode resp = do
   let stCode = case resp.status of StatusCode code -> code
   fVal <- if stCode >= 200 && stCode < 300
-            then return resp.response
+            then pure resp.response
             else throwError $ UnexpectedHTTPStatus resp
   jVal <- throwLeft <<< lmap DecodingError <<< jsonParser $ fVal
   throwLeft <<< lmap DecodingError <<< decode $ jVal
 
 throwLeft :: forall a e m. MonadError e m => Either e a -> m a
 throwLeft (Left e) = throwError e
-throwLeft (Right a) = return a
+throwLeft (Right a) = pure a
 
 
 -- encodeListQuery :: forall a b. Generic a => Settings b -> String -> Array a -> String

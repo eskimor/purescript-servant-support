@@ -7,17 +7,12 @@ module Servant.PureScript.Settings where
 
 import Prelude
 
-import Control.Monad.Error.Class (class MonadError, throwError)
 import Data.Argonaut.Core (Json())
-import Data.Argonaut.Aeson (gAesonEncodeJson, gAesonDecodeJson)
-import Data.Argonaut.Options (stripModulePath)
-import Data.Generic (class Generic, gShow, GenericSpine(..), toSpine)
-import Data.Either (Either(..))
-import Data.Foldable (intercalate)
-import Global (encodeURIComponent)
-import Data.Nullable (Nullable(), toNullable)
-import Data.Maybe (Maybe(..))
-import Data.Array (null, length, sortBy, zipWith)
+import Data.Argonaut.Generic.Aeson as Aeson
+import Data.Argonaut.Generic.Util (stripModulePath)
+import Data.Generic (class Generic, GenericSpine(SArray, SChar, SString, SNumber, SInt, SBoolean, SRecord, SProd, SUnit), toSpine)
+import Data.Either (Either)
+import Data.Array (null)
 import Data.String (joinWith)
 
 
@@ -42,8 +37,8 @@ gDefaultToURLPiece = gToURLPiece <<< toSpine
 
 defaultSettings :: forall params. params -> SPSettings_ params
 defaultSettings params = SPSettings_ {
-    encodeJson : gAesonEncodeJson
-  , decodeJson : gAesonDecodeJson
+    encodeJson : Aeson.encodeJson
+  , decodeJson : Aeson.decodeJson
   , toURLPiece : gDefaultToURLPiece
   , params : params
 }
@@ -64,3 +59,4 @@ genericShowPrec d (SNumber x)  = show x
 genericShowPrec d (SString x)  = show x
 genericShowPrec d (SChar x)    = show x
 genericShowPrec d (SArray xs)  = "[" <> joinWith ", "  (map (\x -> genericShowPrec 0 (x unit)) xs) <> "]"
+genericShowPrec d SUnit        = show unit

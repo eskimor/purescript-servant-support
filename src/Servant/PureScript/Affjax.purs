@@ -6,30 +6,15 @@
 module Servant.PureScript.Affjax where
 
 import Prelude
-
-import Data.Argonaut.Core (Json())
-import Data.Generic (class Generic)
-import Data.Either (Either)
-import Data.Foldable (intercalate)
-import Global (encodeURIComponent)
 import Data.Nullable (Nullable(), toNullable)
 import Data.Maybe (Maybe(..))
 import DOM.XHR.Types (XMLHttpRequest())
-import Control.Monad.Eff.Exception (Error(), error)
-import Control.Monad.Error.Class (throwError)
+import Control.Monad.Eff.Exception (Error)
 import Network.HTTP.ResponseHeader (ResponseHeader, responseHeader)
-import Data.Function (Fn5(), runFn5, Fn4(), runFn4, on)
-import Control.Monad.Aff (Aff(), makeAff, makeAff', Canceler(..), attempt, later', forkAff, cancel)
-import Network.HTTP.Affjax (AJAX, AffjaxResponse)
+import Data.Function.Uncurried (Fn5(), runFn5, Fn4(), runFn4)
+import Control.Monad.Aff (Aff, Canceler(Canceler), makeAff, makeAff')
 import Control.Monad.Eff (Eff())
-import Network.HTTP.StatusCode (StatusCode(..))
-import Data.Foreign (Foreign(), readString)
 import Network.HTTP.Affjax (AJAX, AffjaxResponse)
-import Network.HTTP.StatusCode (StatusCode(..))
-import Data.Foreign (ForeignError(), Foreign(), readString)
-import Data.Bifunctor (lmap)
-import Data.Argonaut.Parser (jsonParser)
-import Data.Generic (class Generic)
 
 
 data AjaxError =
