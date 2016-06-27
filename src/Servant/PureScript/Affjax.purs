@@ -6,20 +6,23 @@
 module Servant.PureScript.Affjax where
 
 import Prelude
-import Data.Nullable (Nullable(), toNullable)
-import Data.Maybe (Maybe(..))
-import DOM.XHR.Types (XMLHttpRequest())
+import Control.Monad.Aff (makeAff', Aff, Canceler(Canceler), makeAff)
+import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Exception (Error)
-import Network.HTTP.ResponseHeader (ResponseHeader, responseHeader)
-import Data.Function.Uncurried (Fn5(), runFn5, Fn4(), runFn4)
-import Control.Monad.Aff (Aff, Canceler(Canceler), makeAff, makeAff')
-import Control.Monad.Eff (Eff())
+import DOM.XHR.Types (XMLHttpRequest)
+import Data.Function.Uncurried (Fn5, runFn5, Fn4, runFn4)
+import Data.Maybe (Maybe(..))
+import Data.Nullable (Nullable, toNullable)
 import Network.HTTP.Affjax (AJAX, AffjaxResponse)
+import Network.HTTP.ResponseHeader (ResponseHeader, responseHeader)
+import Data.Generic (class Generic)
 
 
 data AjaxError =
     UnexpectedHTTPStatus (AffjaxResponse String)
   | DecodingError String
+
+derive instance genericAjaxError :: Generic AjaxError
 
 instance showAjaxError :: Show AjaxError where
   show (UnexpectedHTTPStatus resp) = "An unexpected HTTP status was received: " <> show resp.status
