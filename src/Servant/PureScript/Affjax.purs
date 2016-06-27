@@ -11,15 +11,20 @@ import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Exception (Error)
 import DOM.XHR.Types (XMLHttpRequest)
 import Data.Function.Uncurried (Fn5, runFn5, Fn4, runFn4)
+import Data.Generic (class Generic)
 import Data.Maybe (Maybe(..))
 import Data.Nullable (Nullable, toNullable)
 import Network.HTTP.Affjax (AJAX, AffjaxResponse)
 import Network.HTTP.ResponseHeader (ResponseHeader, responseHeader)
-import Data.Generic (class Generic)
+import Network.HTTP.StatusCode (StatusCode())
 
 
 data AjaxError =
-    UnexpectedHTTPStatus (AffjaxResponse String)
+  UnexpectedHTTPStatus { -- This is the same as AffjaxResponse String, but when using AffjaxResponse String deriving Generic does not work.
+      status :: StatusCode
+    , headers :: Array ResponseHeader
+    , response :: String
+    }
   | DecodingError String
 
 derive instance genericAjaxError :: Generic AjaxError
