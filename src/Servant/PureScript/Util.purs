@@ -1,22 +1,20 @@
 module Servant.PureScript.Util where
 
 import Prelude
-
 import Control.Monad.Error.Class (class MonadError, throwError)
-import Data.Argonaut.Core (Json())
-import Data.Generic (class Generic)
+import Data.Argonaut.Core (Json)
+import Data.Argonaut.Parser (jsonParser)
+import Data.Bifunctor (lmap)
 import Data.Either (Either(..))
 import Data.Foldable (intercalate)
+import Data.Foreign (ForeignError, Foreign, readString)
+import Data.Generic (class Generic)
 import Global (encodeURIComponent)
 import Network.HTTP.Affjax (AffjaxResponse)
 import Network.HTTP.StatusCode (StatusCode(..))
-import Data.Foreign (ForeignError(), Foreign(), readString)
-import Data.Bifunctor (lmap)
-import Data.Argonaut.Parser (jsonParser)
-import Unsafe.Coerce (unsafeCoerce) -- Make the type checker happy (I have to figure out why this is necessary.)
-
 import Servant.PureScript.Affjax (AjaxError(DecodingError, UnexpectedHTTPStatus))
 import Servant.PureScript.Settings (SPSettings_(SPSettings_))
+import Unsafe.Coerce (unsafeCoerce)
 
 getResult :: forall a m. (Generic a, MonadError AjaxError m) => (Json -> Either String a) -> AffjaxResponse String -> m a
 getResult decode resp = do
@@ -24,8 +22,8 @@ getResult decode resp = do
   fVal <- if stCode >= 200 && stCode < 300
             then pure resp.response
             else throwError $ UnexpectedHTTPStatus resp
-  jVal <- throwLeft <<< lmap DecodingError <<< jsonParser $ fVal
-  throwLeft <<< lmap DecodingError <<< decode $ jVal
+  jVal <- throwLeft <<< lmap (reportDecodingError fVal) <<< jsonParser $ fVal
+  throwLeft <<< lmap (reportDecodingError fVal)<<< decode $ jVal
 
 throwLeft :: forall a e m. MonadError e m => Either e a -> m a
 throwLeft (Left e) = throwError e
@@ -38,3 +36,7 @@ encodeListQuery opts'@(SPSettings_ opts) fName = intercalate "&" <<< map (encode
 -- | The given name is assumed to be already escaped.
 -- encodeQueryItem :: forall a b. Generic a => SPSettings_ b -> String -> a -> String
 encodeQueryItem (SPSettings_ opts) fName val = fName <> "=" <> (encodeURIComponent <<< unsafeCoerce opts.toURLPiece) val
+
+
+reportDecodingError :: String -> String -> AjaxError
+reportDecodingError source err = DecodingError $ err <> ", source: '" <> source <> "'"
