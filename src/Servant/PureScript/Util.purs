@@ -12,7 +12,7 @@ import Data.Generic (class Generic)
 import Global (encodeURIComponent)
 import Network.HTTP.Affjax (AffjaxResponse)
 import Network.HTTP.StatusCode (StatusCode(..))
-import Servant.PureScript.Affjax (AjaxError(DecodingError, UnexpectedHTTPStatus))
+import Servant.PureScript.Affjax (AjaxError(DecodingError, ParsingError, UnexpectedHTTPStatus))
 import Servant.PureScript.Settings (SPSettings_(SPSettings_))
 import Unsafe.Coerce (unsafeCoerce)
 
@@ -22,8 +22,8 @@ getResult decode resp = do
   fVal <- if stCode >= 200 && stCode < 300
             then pure resp.response
             else throwError $ UnexpectedHTTPStatus resp
-  jVal <- throwLeft <<< lmap (reportDecodingError fVal) <<< jsonParser $ fVal
-  throwLeft <<< lmap (reportDecodingError fVal)<<< decode $ jVal
+  jVal <- throwLeft <<< lmap (reportError ParsingError fVal) <<< jsonParser $ fVal
+  throwLeft <<< lmap (reportError DecodingError (show jVal)) <<< decode $ jVal
 
 throwLeft :: forall a e m. MonadError e m => Either e a -> m a
 throwLeft (Left e) = throwError e
@@ -38,5 +38,5 @@ encodeListQuery opts'@(SPSettings_ opts) fName = intercalate "&" <<< map (encode
 encodeQueryItem (SPSettings_ opts) fName val = fName <> "=" <> (encodeURIComponent <<< unsafeCoerce opts.toURLPiece) val
 
 
-reportDecodingError :: String -> String -> AjaxError
-reportDecodingError source err = DecodingError $ err <> ", source: '" <> source <> "'"
+reportError :: (String -> AjaxError) -> String -> String  -> AjaxError 
+reportError err source msg = err $ msg <> ", source: '" <> source <> "'"
