@@ -15,7 +15,7 @@
     "purescript-foldable-traversable": "^1.0.0",
     "purescript-nullable": "^1.0.0",
     "purescript-dom": "^1.0.0",
-    "purescript-affjax": "git@github.com:eskimor/purescript-affjax.git#added-generics",
+    "purescript-affjax": "^1.1.0",
     "purescript-argonaut-generic-codecs": "^1.0.0"
   }
 }
