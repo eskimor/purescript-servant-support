@@ -41,7 +41,7 @@ exports._ajax = function (mkHeader, options, canceler, errback, callback) {
     };
 
     platformSpecific.getResponse = function (xhr) {
-      return xhr.response;
+      return xhr.responseText;
     };
   }
 
