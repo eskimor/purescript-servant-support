@@ -55,7 +55,7 @@ defaultRequest = {
   , headers : [ {field : "Accept", value : "application/json"}
               , {field : "content-type", value : "application/json"}]
   , content : toNullable (Nothing :: Maybe String)
-  , responseType : "json"
+  , responseType : "text"
   , username : toNullable (Nothing :: Maybe String)
   , password : toNullable (Nothing :: Maybe String)
   , withCredentials : false

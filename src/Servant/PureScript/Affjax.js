@@ -28,7 +28,7 @@ exports._ajax = function (mkHeader, options, canceler, errback, callback) {
     };
 
     platformSpecific.getResponse = function (xhr) {
-      return xhr.responseText;
+      return xhr.response;
     };
   } else {
     // We are in the browser
@@ -41,7 +41,7 @@ exports._ajax = function (mkHeader, options, canceler, errback, callback) {
     };
 
     platformSpecific.getResponse = function (xhr) {
-      return xhr.responseText;
+      return xhr.response;
     };
   }
 
