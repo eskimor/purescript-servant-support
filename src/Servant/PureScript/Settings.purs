@@ -39,7 +39,7 @@ defaultSettings :: forall params. params -> SPSettings_ params
 defaultSettings params = SPSettings_ {
     encodeJson : Aeson.encodeJson
   , decodeJson : Aeson.decodeJson
-  , toURLPiece : gDefaultToURLPiece
+  , toURLPiece : show <<< Aeson.encodeJson -- Just use the robust JSON format.
   , params : params
 }
 
