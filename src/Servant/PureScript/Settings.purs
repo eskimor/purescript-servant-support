@@ -6,13 +6,12 @@ module Servant.PureScript.Settings where
 
 
 import Prelude
-
-import Data.Argonaut.Core (Json())
 import Data.Argonaut.Generic.Aeson as Aeson
+import Data.Argonaut.Core (Json)
 import Data.Argonaut.Generic.Util (stripModulePath)
-import Data.Generic (class Generic, GenericSpine(SArray, SChar, SString, SNumber, SInt, SBoolean, SRecord, SProd, SUnit), toSpine)
-import Data.Either (Either)
 import Data.Array (null)
+import Data.Either (Either)
+import Data.Generic (class Generic, GenericSpine(SArray, SChar, SString, SNumber, SInt, SBoolean, SRecord, SProd, SUnit), toSpine)
 import Data.String (joinWith)
 
 
@@ -27,36 +26,15 @@ newtype SPSettings_ params = SPSettings_ {
 
 type URLPiece = String
 
+-- Just use the robust JSON format.
 gDefaultToURLPiece :: forall a. Generic a => a -> URLPiece
-gDefaultToURLPiece = gToURLPiece <<< toSpine
-  where
-    gToURLPiece :: GenericSpine -> String
-    gToURLPiece (SProd s arr) = genericShowPrec 0 $ SProd (stripModulePath s) arr
-    gToURLPiece s = genericShowPrec 0 s
+gDefaultToURLPiece = show <<< Aeson.encodeJson
 
 
 defaultSettings :: forall params. params -> SPSettings_ params
 defaultSettings params = SPSettings_ {
     encodeJson : Aeson.encodeJson
   , decodeJson : Aeson.decodeJson
-  , toURLPiece : show <<< Aeson.encodeJson -- Just use the robust JSON format.
+  , toURLPiece : gDefaultToURLPiece
   , params : params
 }
-
-
-genericShowPrec :: Int -> GenericSpine -> String
-genericShowPrec d (SProd s arr) =
-    if null arr
-    then s
-    else showParen (d > 10) $ s <> " " <> joinWith " " (map (\x -> genericShowPrec 11 (x unit)) arr)
-  where showParen false x = x
-        showParen true  x = "(" <> x <> ")"
-
-genericShowPrec d (SRecord xs) = "{" <> joinWith ", " (map (\x -> x.recLabel <> ": " <> genericShowPrec 0 (x.recValue unit)) xs) <> "}"
-genericShowPrec d (SBoolean x) = show x
-genericShowPrec d (SInt x)     = show x
-genericShowPrec d (SNumber x)  = show x
-genericShowPrec d (SString x)  = show x
-genericShowPrec d (SChar x)    = show x
-genericShowPrec d (SArray xs)  = "[" <> joinWith ", "  (map (\x -> genericShowPrec 0 (x unit)) xs) <> "]"
-genericShowPrec d SUnit        = show unit
