@@ -38,7 +38,7 @@ encodeListQuery opts'@(SPSettings_ opts) fName = intercalate "&" <<< map (encode
 encodeQueryItem opts'@(SPSettings_ opts) fName val = fName <> "=" <> encodeURLPiece opts' val
 
 -- | Call opts.toURLPiece and encode the resulting string with encodeURIComponent.
--- toEscapedURLPiece :: forall a params. Generic a => SPSettings_ params -> a -> String
+encodeURLPiece :: forall a params. Generic a => SPSettings_ params -> a -> String
 encodeURLPiece (SPSettings_ opts) = encodeURIComponent <<< unsafeCoerce opts.toURLPiece
 
 
