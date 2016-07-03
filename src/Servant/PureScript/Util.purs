@@ -13,7 +13,7 @@ import Global (encodeURIComponent)
 import Network.HTTP.Affjax (AffjaxResponse)
 import Network.HTTP.StatusCode (StatusCode(..))
 import Servant.PureScript.Affjax (AjaxError(DecodingError, ParsingError, UnexpectedHTTPStatus))
-import Servant.PureScript.Settings (SPSettings_(SPSettings_))
+import Servant.PureScript.Settings (gDefaultToURLPiece, SPSettings_(SPSettings_))
 import Unsafe.Coerce (unsafeCoerce)
 
 getResult :: forall a m. (Generic a, MonadError AjaxError m) => (Json -> Either String a) -> AffjaxResponse String -> m a
@@ -39,7 +39,7 @@ encodeQueryItem opts'@(SPSettings_ opts) fName val = fName <> "=" <> encodeURLPi
 
 -- | Call opts.toURLPiece and encode the resulting string with encodeURIComponent.
 encodeURLPiece :: forall a params. Generic a => SPSettings_ params -> a -> String
-encodeURLPiece (SPSettings_ opts) = encodeURIComponent <<< unsafeCoerce opts.toURLPiece
+encodeURLPiece (SPSettings_ opts) = encodeURIComponent <<< gDefaultToURLPiece
 
 
 reportError :: (String -> AjaxError) -> String -> String  -> AjaxError 
