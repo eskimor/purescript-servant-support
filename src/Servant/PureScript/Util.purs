@@ -35,7 +35,11 @@ encodeListQuery opts'@(SPSettings_ opts) fName = intercalate "&" <<< map (encode
 
 -- | The given name is assumed to be already escaped.
 -- encodeQueryItem :: forall a b. Generic a => SPSettings_ b -> String -> a -> String
-encodeQueryItem (SPSettings_ opts) fName val = fName <> "=" <> (encodeURIComponent <<< unsafeCoerce opts.toURLPiece) val
+encodeQueryItem opts'@(SPSettings_ opts) fName val = fName <> "=" <> encodeURLPiece opts' val
+
+-- | Call opts.toURLPiece and encode the resulting string with encodeURIComponent.
+-- toEscapedURLPiece :: forall a params. Generic a => SPSettings_ params -> a -> String
+encodeURLPiece (SPSettings_ opts) = encodeURIComponent <<< unsafeCoerce opts.toURLPiece
 
 
 reportError :: (String -> AjaxError) -> String -> String  -> AjaxError 
