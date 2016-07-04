@@ -13,6 +13,7 @@ import Data.Array (null)
 import Data.Either (Either)
 import Data.Generic (class Generic, GenericSpine(SArray, SChar, SString, SNumber, SInt, SBoolean, SRecord, SProd, SUnit), toSpine)
 import Data.String (joinWith)
+import Global (encodeURIComponent)
 
 
 -- | WARNING: encodeJson, decodeJson, toURLPiece: currently ignored due to compiler bug:
@@ -26,9 +27,13 @@ newtype SPSettings_ params = SPSettings_ {
 
 type URLPiece = String
 
--- Just use the robust JSON format.
+-- | Just use the robust JSON format.
 gDefaultToURLPiece :: forall a. Generic a => a -> URLPiece
 gDefaultToURLPiece = show <<< Aeson.encodeJson
+
+-- | Full encoding based on gDefaultToURLPiece
+gDefaultEncodeURLPiece :: forall a. Generic a => a -> URLPiece
+gDefaultEncodeURLPiece = encodeURIComponent <<< gDefaultToURLPiece
 
 
 defaultSettings :: forall params. params -> SPSettings_ params
