@@ -16,6 +16,6 @@
     "purescript-nullable": "^1.0.0",
     "purescript-dom": "^1.0.0",
     "purescript-affjax": "^1.1.0",
-    "purescript-argonaut-generic-codecs": "^1.0.0"
+    "purescript-argonaut-generic-codecs": "^2.0.0"
   }
 }
