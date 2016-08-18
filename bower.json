@@ -1,5 +1,6 @@
 {
   "name": "purescript-servant-support",
+  "license": "MIT",
   "ignore": [
     "**/.*",
     "node_modules",
