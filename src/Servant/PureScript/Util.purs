@@ -42,5 +42,5 @@ encodeURLPiece :: forall a params. Generic a => SPSettings_ params -> a -> Strin
 encodeURLPiece (SPSettings_ opts) = encodeURIComponent <<< gDefaultToURLPiece
 
 
-reportError :: (String -> AjaxError) -> String -> String  -> AjaxError 
+reportError :: forall err. (String -> err) -> String -> String  -> err 
 reportError err source msg = err $ msg <> ", source: '" <> source <> "'"
