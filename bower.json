@@ -1,6 +1,19 @@
 {
   "name": "purescript-servant-support",
-  "license": "MIT",
+    "homepage": "https://github.com/eskimor/purescript-servant-support",
+    "authors": [
+        "Robert Klotzner <robert.klotzner AT gmx.at>"
+    ],
+    "description": "Support library needed for servant-purescript generated code.",
+    "keywords": [
+        "purescript",
+        "servant"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/eskimor/purescript-servant-support.git"
+    }
+    ,"license": "MIT",
   "ignore": [
     "**/.*",
     "node_modules",
