@@ -90,3 +90,7 @@ exports._cancelAjax = function (xhr, cancelError, errback, callback) {
     return callback(true)();
   };
 };
+
+exports.unsafeToString = function (obj) {
+    return JSON.stringify(obj, null, 4)
+}

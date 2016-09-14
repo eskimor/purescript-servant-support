@@ -14,9 +14,9 @@ import Data.Function.Uncurried (Fn5, runFn5, Fn4, runFn4)
 import Data.Generic (class Generic)
 import Data.Maybe (Maybe(..))
 import Data.Nullable (Nullable, toNullable)
-import Network.HTTP.Affjax (AJAX, AffjaxResponse)
+import Network.HTTP.Affjax (AffjaxResponse, AJAX)
 import Network.HTTP.ResponseHeader (ResponseHeader, responseHeader)
-import Network.HTTP.StatusCode (StatusCode())
+import Network.HTTP.StatusCode (StatusCode)
 
 
 data AjaxError =
@@ -47,6 +47,12 @@ type AjaxRequest =
   , password :: Nullable String
   , withCredentials :: Boolean
   }
+
+requestToString :: AjaxRequest -> String
+requestToString = unsafeToString
+
+responseToString :: AffjaxResponse String -> String
+responseToString = unsafeToString
 
 defaultRequest :: AjaxRequest
 defaultRequest = {
@@ -90,3 +96,5 @@ foreign import _cancelAjax
                    (Error -> Eff (ajax :: AJAX | e) Unit)
                    (Boolean -> Eff (ajax :: AJAX | e) Unit)
                    (Eff (ajax :: AJAX | e) Unit)
+
+foreign import unsafeToString :: forall obj. obj -> String
