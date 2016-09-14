@@ -1,19 +1,19 @@
 {
   "name": "purescript-servant-support",
-    "homepage": "https://github.com/eskimor/purescript-servant-support",
-    "authors": [
-        "Robert Klotzner <robert.klotzner AT gmx.at>"
-    ],
-    "description": "Support library needed for servant-purescript generated code.",
-    "keywords": [
-        "purescript",
-        "servant"
-    ],
-    "repository": {
-        "type": "git",
-        "url": "git://github.com/eskimor/purescript-servant-support.git"
-    }
-    ,"license": "MIT",
+  "homepage": "https://github.com/eskimor/purescript-servant-support",
+  "authors": [
+    "Robert Klotzner <robert.klotzner AT gmx.at>"
+  ],
+  "description": "Support library needed for servant-purescript generated code.",
+  "keywords": [
+    "purescript",
+    "servant"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/eskimor/purescript-servant-support.git"
+  },
+  "license": "MIT",
   "ignore": [
     "**/.*",
     "node_modules",
@@ -31,5 +31,8 @@
     "purescript-dom": "^1.2.0",
     "purescript-affjax": "^1.1.0",
     "purescript-argonaut-generic-codecs": "^3.0.0"
+  },
+  "devDependencies": {
+    "purescript-psci-support": "^1.0.0"
   }
 }
