@@ -18,24 +18,14 @@ import Network.HTTP.Affjax (AffjaxResponse, AJAX)
 import Network.HTTP.ResponseHeader (ResponseHeader, responseHeader)
 import Network.HTTP.StatusCode (StatusCode)
 
+type AjaxError =
+  { request :: AjaxRequest
+  , description :: ErrorDescription
+  }
 
-data AjaxError =
-  UnexpectedHTTPStatus { -- This is the same as AffjaxResponse String, but when using AffjaxResponse String deriving Generic does not work.
-      status :: StatusCode
-    , headers :: Array ResponseHeader
-    , response :: String
-    }
-  | ParsingError String
-  | DecodingError String
-
-derive instance genericAjaxError :: Generic AjaxError
-
-instance showAjaxError :: Show AjaxError where
-  show (UnexpectedHTTPStatus resp) = "An unexpected HTTP status was received: " <> show resp.status
-  show (DecodingError str) = "Decoding failed: " <> str
-  show (ParsingError str) = "Parsing failed: " <> str
-
-
+data ErrorDescription = UnexpectedHTTPStatus (AffjaxResponse String)
+                      | ParsingError String
+                      | DecodingError String
 
 type AjaxRequest =
   { method :: String
@@ -47,6 +37,9 @@ type AjaxRequest =
   , password :: Nullable String
   , withCredentials :: Boolean
   }
+
+errorToString :: AjaxError -> String
+errorToString = unsafeToString
 
 requestToString :: AjaxRequest -> String
 requestToString = unsafeToString

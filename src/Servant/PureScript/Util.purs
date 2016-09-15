@@ -12,18 +12,21 @@ import Data.Generic (class Generic)
 import Global (encodeURIComponent)
 import Network.HTTP.Affjax (AffjaxResponse)
 import Network.HTTP.StatusCode (StatusCode(..))
-import Servant.PureScript.Affjax (AjaxError(DecodingError, ParsingError, UnexpectedHTTPStatus))
+import Servant.PureScript.Affjax (AjaxError, ErrorDescription, ErrorDescription(DecodingError, ParsingError, UnexpectedHTTPStatus), AjaxRequest)
 import Servant.PureScript.Settings (gDefaultToURLPiece, SPSettings_(SPSettings_))
 import Unsafe.Coerce (unsafeCoerce)
 
-getResult :: forall a m. (Generic a, MonadError AjaxError m) => (Json -> Either String a) -> AffjaxResponse String -> m a
-getResult decode resp = do
+-- | Get the result of a request.
+-- |
+-- | Reports an error if status code is non success or decoding fails. The taken AjaxRequest is only for error reporting.
+getResult :: forall a m. (Generic a, MonadError AjaxError m) => AjaxRequest -> (Json -> Either String a) -> AffjaxResponse String -> m a
+getResult req' decode resp = do
   let stCode = case resp.status of StatusCode code -> code
   fVal <- if stCode >= 200 && stCode < 300
             then pure resp.response
-            else throwError $ UnexpectedHTTPStatus resp
-  jVal <- throwLeft <<< lmap (reportError ParsingError fVal) <<< jsonParser $ fVal
-  throwLeft <<< lmap (reportError DecodingError (show jVal)) <<< decode $ jVal
+            else throwError $ { request : req', description : UnexpectedHTTPStatus resp }
+  jVal <- throwLeft <<< lmap (reportRequestError req' ParsingError fVal) <<< jsonParser $ fVal
+  throwLeft <<< lmap (reportRequestError req' DecodingError (show jVal)) <<< decode $ jVal
 
 throwLeft :: forall a e m. MonadError e m => Either e a -> m a
 throwLeft (Left e) = throwError e
@@ -41,6 +44,8 @@ encodeQueryItem opts'@(SPSettings_ opts) fName val = fName <> "=" <> encodeURLPi
 encodeURLPiece :: forall a params. Generic a => SPSettings_ params -> a -> String
 encodeURLPiece (SPSettings_ opts) = encodeURIComponent <<< gDefaultToURLPiece
 
+reportRequestError :: AjaxRequest -> (String -> ErrorDescription) -> String -> String -> AjaxError
+reportRequestError req' err source msg = { request : req', description : reportError err source msg }
 
 reportError :: forall err. (String -> err) -> String -> String  -> err 
 reportError err source msg = err $ msg <> ", source: '" <> source <> "'"
