@@ -18,7 +18,7 @@ import Network.HTTP.Affjax (AffjaxResponse, AJAX)
 import Network.HTTP.ResponseHeader (ResponseHeader, responseHeader)
 import Network.HTTP.StatusCode (StatusCode)
 
-type AjaxError =
+newtype AjaxError = AjaxError
   { request :: AjaxRequest
   , description :: ErrorDescription
   }
@@ -37,6 +37,14 @@ type AjaxRequest =
   , password :: Nullable String
   , withCredentials :: Boolean
   }
+
+makeAjaxError :: AjaxRequest -> ErrorDescription -> AjaxError
+makeAjaxError req desc = AjaxError { request : req
+                                   , description : desc
+                                   }
+
+runAjaxError :: AjaxError -> { request :: AjaxRequest, description :: ErrorDescription}
+runAjaxError (AjaxError err) = err
 
 errorToString :: AjaxError -> String
 errorToString = unsafeToString
