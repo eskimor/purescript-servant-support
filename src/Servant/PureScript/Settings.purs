@@ -29,7 +29,9 @@ type URLPiece = String
 
 -- | Just use the robust JSON format.
 gDefaultToURLPiece :: forall a. Generic a => a -> URLPiece
-gDefaultToURLPiece = show <<< Aeson.encodeJson
+gDefaultToURLPiece v = case toSpine v of
+    SString s -> s -- Special case string - just use it as is.
+    _ -> show <<< Aeson.encodeJson $ v
 
 -- | Full encoding based on gDefaultToURLPiece
 gDefaultEncodeURLPiece :: forall a. Generic a => a -> URLPiece
