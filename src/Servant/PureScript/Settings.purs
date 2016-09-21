@@ -35,7 +35,7 @@ gDefaultToURLPiece = gDefaultEncodeHeader
 gDefaultEncodeHeader :: forall a. Generic a => a -> URLPiece
 gDefaultEncodeHeader v =
   case toSpine v of
-    SString _ -> v -- Special case string - just use it as is (http-api-data compatibility).
+    SString s -> s -- Special case string - just use it as is (http-api-data compatibility).
     _ -> gDefaultToURLPiece $ v
 
 -- | Full encoding based on gDefaultToURLPiece

@@ -13,7 +13,7 @@ import Global (encodeURIComponent)
 import Network.HTTP.Affjax (AffjaxResponse)
 import Network.HTTP.StatusCode (StatusCode(..))
 import Servant.PureScript.Affjax (makeAjaxError, AjaxError, ErrorDescription, ErrorDescription(DecodingError, ParsingError, UnexpectedHTTPStatus), AjaxRequest)
-import Servant.PureScript.Settings (gDefaultToURLPiece, SPSettings_(SPSettings_))
+import Servant.PureScript.Settings (gDefaultEncodeHeader, gDefaultEncodeURLPiece, gDefaultToURLPiece, SPSettings_(SPSettings_))
 import Unsafe.Coerce (unsafeCoerce)
 
 -- | Get the result of a request.
