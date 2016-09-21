@@ -42,7 +42,11 @@ encodeQueryItem opts'@(SPSettings_ opts) fName val = fName <> "=" <> encodeURLPi
 
 -- | Call opts.toURLPiece and encode the resulting string with encodeURIComponent.
 encodeURLPiece :: forall a params. Generic a => SPSettings_ params -> a -> String
-encodeURLPiece (SPSettings_ opts) = encodeURIComponent <<< gDefaultToURLPiece
+encodeURLPiece (SPSettings_ opts) = gDefaultEncodeURLPiece
+
+encodeHeader :: forall a params. Generic a => SPSettings_ params -> a -> String
+encodeHeader (SPSettings_ opts) = gDefaultEncodeHeader
+
 
 reportRequestError :: AjaxRequest -> (String -> ErrorDescription) -> String -> String -> AjaxError
 reportRequestError req' err source msg = makeAjaxError req' $ reportError err source msg
