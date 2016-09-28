@@ -7,9 +7,12 @@ module Servant.PureScript.Affjax where
 
 import Prelude
 import Control.Monad.Aff (makeAff', Aff, Canceler(Canceler), makeAff)
+import Control.Monad.Aff.Class (liftAff, class MonadAff)
 import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Exception (Error)
+import Control.Monad.Eff.Exception (message, Error)
+import Control.Monad.Error.Class (throwError, catchError, class MonadError)
 import DOM.XHR.Types (XMLHttpRequest)
+import Data.Either (Either(Left, Right))
 import Data.Function.Uncurried (Fn5, runFn5, Fn4, runFn4)
 import Data.Generic (class Generic)
 import Data.Maybe (Maybe(..))
@@ -26,6 +29,7 @@ newtype AjaxError = AjaxError
 data ErrorDescription = UnexpectedHTTPStatus (AffjaxResponse String)
                       | ParsingError String
                       | DecodingError String
+                      | ConnectionError String
 
 type AjaxRequest =
   { method :: String
@@ -69,8 +73,22 @@ defaultRequest = {
   }
 
 
-affjax :: forall e. AjaxRequest -> Aff (ajax :: AJAX | e) (AffjaxResponse String)
-affjax = makeAff' <<< ajax
+-- | Do an affjax call but report Aff exceptions in our own MonadError
+affjax :: forall eff m. (MonadError AjaxError m, MonadAff (ajax :: AJAX | eff) m)
+        => AjaxRequest -> m (AffjaxResponse String)
+affjax req = toAjaxError <=< liftAff <<< toEither <<< makeAff' <<< ajax $ req
+  where
+    toEither :: forall a. Aff (ajax :: AJAX | eff) a -> Aff (ajax :: AJAX | eff) (Either String a)
+    toEither action = catchError (Right <$> action) $ \e ->
+     pure $ Left (message e)
+
+    toAjaxError :: forall a. Either String a -> m a
+    toAjaxError r = case r of
+        Left err -> throwError $ AjaxError
+                                  { request : req
+                                  , description : ConnectionError err
+                                  }
+        Right v  -> pure v
 
 ajax :: forall e.
      AjaxRequest
