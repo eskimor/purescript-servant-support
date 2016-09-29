@@ -28,8 +28,8 @@
     "purescript-globals": "^1.0.0",
     "purescript-foldable-traversable": "^1.0.0",
     "purescript-nullable": "^1.0.0",
-    "purescript-dom": "1.2.0 - 3.0.0",
-    "purescript-affjax": "1.1.0 - 3.0.0",
+    "purescript-dom": "^2.2.0",
+    "purescript-affjax": "^2.0.1",
     "purescript-argonaut-generic-codecs": "^3.0.0"
   },
   "devDependencies": {
