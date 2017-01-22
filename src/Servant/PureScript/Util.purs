@@ -7,14 +7,12 @@ import Data.Argonaut.Parser (jsonParser)
 import Data.Bifunctor (lmap)
 import Data.Either (Either(..))
 import Data.Foldable (intercalate)
-import Data.Foreign (ForeignError, Foreign, readString)
+
 import Data.Generic (class Generic)
-import Global (encodeURIComponent)
 import Network.HTTP.Affjax (AffjaxResponse)
 import Network.HTTP.StatusCode (StatusCode(..))
-import Servant.PureScript.Affjax (makeAjaxError, AjaxError, ErrorDescription, ErrorDescription(DecodingError, ParsingError, UnexpectedHTTPStatus), AjaxRequest)
-import Servant.PureScript.Settings (gDefaultEncodeHeader, gDefaultEncodeURLPiece, gDefaultToURLPiece, SPSettings_(SPSettings_))
-import Unsafe.Coerce (unsafeCoerce)
+import Servant.PureScript.Affjax (makeAjaxError, AjaxError, ErrorDescription(DecodingError, ParsingError, UnexpectedHTTPStatus), AjaxRequest)
+import Servant.PureScript.Settings (SPSettings_(SPSettings_), gDefaultEncodeHeader, gDefaultEncodeURLPiece)
 
 -- | Get the result of a request.
 -- |

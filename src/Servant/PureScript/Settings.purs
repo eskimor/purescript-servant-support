@@ -8,11 +8,8 @@ module Servant.PureScript.Settings where
 import Prelude
 import Data.Argonaut.Generic.Aeson as Aeson
 import Data.Argonaut.Core (Json)
-import Data.Argonaut.Generic.Util (stripModulePath)
-import Data.Array (null)
 import Data.Either (Either)
-import Data.Generic (class Generic, GenericSpine(SArray, SChar, SString, SNumber, SInt, SBoolean, SRecord, SProd, SUnit), toSpine)
-import Data.String (joinWith)
+import Data.Generic (class Generic, GenericSpine(SString), toSpine)
 import Global (encodeURIComponent)
 
 

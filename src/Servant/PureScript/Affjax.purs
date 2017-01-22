@@ -14,12 +14,10 @@ import Control.Monad.Error.Class (throwError, catchError, class MonadError)
 import DOM.XHR.Types (XMLHttpRequest)
 import Data.Either (Either(Left, Right))
 import Data.Function.Uncurried (Fn5, runFn5, Fn4, runFn4)
-import Data.Generic (class Generic)
 import Data.Maybe (Maybe(..))
 import Data.Nullable (Nullable, toNullable)
 import Network.HTTP.Affjax (AffjaxResponse, AJAX)
 import Network.HTTP.ResponseHeader (ResponseHeader, responseHeader)
-import Network.HTTP.StatusCode (StatusCode)
 
 newtype AjaxError = AjaxError
   { request :: AjaxRequest
