@@ -7,14 +7,11 @@ import Data.Argonaut.Parser (jsonParser)
 import Data.Bifunctor (lmap)
 import Data.Either (Either(..))
 import Data.Foldable (intercalate)
-import Data.Foreign (ForeignError, Foreign, readString)
 import Data.Generic (class Generic)
-import Global (encodeURIComponent)
 import Network.HTTP.Affjax (AffjaxResponse)
 import Network.HTTP.StatusCode (StatusCode(..))
 import Servant.PureScript.Affjax (makeAjaxError, AjaxError, ErrorDescription, ErrorDescription(DecodingError, ParsingError, UnexpectedHTTPStatus), AjaxRequest)
-import Servant.PureScript.Settings (gDefaultEncodeHeader, gDefaultEncodeURLPiece, gDefaultToURLPiece, SPSettings_(SPSettings_))
-import Unsafe.Coerce (unsafeCoerce)
+import Servant.PureScript.Settings (gDefaultEncodeHeader, gDefaultEncodeURLPiece, SPSettings_(SPSettings_))
 
 -- | Get the result of a request.
 -- |
@@ -33,7 +30,7 @@ throwLeft (Left e) = throwError e
 throwLeft (Right a) = pure a
 
 
--- encodeListQuery :: forall a b. Generic a => Settings b -> String -> Array a -> String
+-- encodeListQuery :: forall a b. Generic a => SPSettings_ b -> String -> Array a -> String
 encodeListQuery opts'@(SPSettings_ opts) fName = intercalate "&" <<< map (encodeQueryItem opts' fName)
 
 -- | The given name is assumed to be already escaped.
