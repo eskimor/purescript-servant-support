@@ -30,11 +30,11 @@ throwLeft (Left e) = throwError e
 throwLeft (Right a) = pure a
 
 
--- encodeListQuery :: forall a b. Generic a => SPSettings_ b -> String -> Array a -> String
+encodeListQuery :: forall a b. Generic a => SPSettings_ b -> String -> Array a -> String
 encodeListQuery opts'@(SPSettings_ opts) fName = intercalate "&" <<< map (encodeQueryItem opts' fName)
 
 -- | The given name is assumed to be already escaped.
--- encodeQueryItem :: forall a b. Generic a => SPSettings_ b -> String -> a -> String
+encodeQueryItem :: forall a b. Generic a => SPSettings_ b -> String -> a -> String
 encodeQueryItem opts'@(SPSettings_ opts) fName val = fName <> "=" <> encodeURLPiece opts' val
 
 -- | Call opts.toURLPiece and encode the resulting string with encodeURIComponent.
