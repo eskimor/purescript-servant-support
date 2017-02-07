@@ -30,7 +30,7 @@
     "purescript-nullable": "^2.0.0",
     "purescript-dom": "^3.3.1",
     "purescript-affjax": "^3.0.2",
-    "purescript-argonaut-generic-codecs": "themoritz/purescript-argonaut-generic-codecs#psc-10"
+    "purescript-argonaut-generic-codecs": "^4.0.0"
   },
   "devDependencies": {
     "purescript-psci-support": "^2.0.0"
