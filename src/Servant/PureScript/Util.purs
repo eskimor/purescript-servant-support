@@ -16,7 +16,13 @@ import Servant.PureScript.Settings (gDefaultEncodeHeader, gDefaultEncodeURLPiece
 -- | Get the result of a request.
 -- |
 -- | Reports an error if status code is non success or decoding fails. The taken AjaxRequest is only for error reporting.
-getResult :: forall a m. (Generic a, MonadError AjaxError m) => AjaxRequest -> (Json -> Either String a) -> AffjaxResponse String -> m a
+getResult
+  :: forall a m
+   . Generic a
+  => MonadError AjaxError m
+  => AjaxRequest
+  -> (Json -> Either String a)
+  -> AffjaxResponse String -> m a
 getResult req' decode resp = do
   let stCode = case resp.status of StatusCode code -> code
   fVal <- if stCode >= 200 && stCode < 300

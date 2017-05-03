@@ -72,8 +72,12 @@ defaultRequest = {
 
 
 -- | Do an affjax call but report Aff exceptions in our own MonadError
-affjax :: forall eff m. (MonadError AjaxError m, MonadAff (ajax :: AJAX | eff) m)
-        => AjaxRequest -> m (AffjaxResponse String)
+affjax
+  :: forall eff m
+   . MonadError AjaxError m
+  => MonadAff (ajax :: AJAX | eff) m
+  => AjaxRequest
+  -> m (AffjaxResponse String)
 affjax req = toAjaxError <=< liftAff <<< toEither <<< makeAff' <<< ajax $ req
   where
     toEither :: forall a. Aff (ajax :: AJAX | eff) a -> Aff (ajax :: AJAX | eff) (Either String a)
