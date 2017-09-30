@@ -5,3 +5,4 @@
 /.psci*
 /src/.webpack.js
 /setupPath.sh
+/.idea

@@ -13,12 +13,19 @@ import Data.Generic (class Generic, GenericSpine(SString), toSpine)
 import Global (encodeURIComponent)
 
 
--- | WARNING: encodeJson, decodeJson, toURLPiece: currently ignored due to compiler bug:
+-- | WARNING: encodeJson, decodeJson, toURLPiece have to be wrapped in newtype. See:
 --   https://github.com/purescript/purescript/issues/1957
+
+newtype SPSettingsEncodeJson_ = SPSettingsEncodeJson_ (forall a. Generic a => a -> Json)
+newtype SPSettingsDecodeJson_ = SPSettingsDecodeJson_ (forall a. Generic a => Json -> Either String a)
+newtype SPSettingsToUrlPiece_ = SPSettingsToUrlPiece_ (forall a. Generic a => a -> URLPiece)
+newtype SPSettingsEncodeHeader_ = SPSettingsEncodeHeader_ (forall a. Generic a => a -> URLPiece)
+
 newtype SPSettings_ params = SPSettings_ {
-    encodeJson :: forall a. Generic a => a -> Json -- Currently not used (does not work - compiler bug: )
-  , decodeJson :: forall a. Generic a => Json -> Either String a
-  , toURLPiece :: forall a. Generic a => a -> URLPiece
+    encodeJson :: SPSettingsEncodeJson_
+  , decodeJson :: SPSettingsDecodeJson_
+  , toURLPiece :: SPSettingsToUrlPiece_
+  , encodeHeader :: SPSettingsEncodeHeader_
   , params :: params
   }
 
@@ -42,8 +49,9 @@ gDefaultEncodeURLPiece = encodeURIComponent <<< gDefaultToURLPiece
 
 defaultSettings :: forall params. params -> SPSettings_ params
 defaultSettings params = SPSettings_ {
-    encodeJson : Aeson.encodeJson
-  , decodeJson : Aeson.decodeJson
-  , toURLPiece : gDefaultToURLPiece
+    encodeJson : SPSettingsEncodeJson_ Aeson.encodeJson
+  , decodeJson : SPSettingsDecodeJson_ Aeson.decodeJson
+  , toURLPiece : SPSettingsToUrlPiece_ gDefaultToURLPiece
+  , encodeHeader : SPSettingsEncodeHeader_ gDefaultEncodeHeader
   , params : params
 }
