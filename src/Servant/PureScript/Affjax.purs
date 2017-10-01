@@ -6,7 +6,8 @@
 module Servant.PureScript.Affjax where
 
 import Prelude
-import Control.Monad.Aff (makeAff', Aff, Canceler(Canceler), makeAff)
+
+import Control.Monad.Aff (Aff, Canceler(Canceler), makeAff)
 import Control.Monad.Aff.Class (liftAff, class MonadAff)
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Exception (message, Error)
@@ -15,6 +16,7 @@ import DOM.XHR.Types (XMLHttpRequest)
 import Data.Either (Either(Left, Right))
 import Data.Function.Uncurried (Fn5, runFn5, Fn4, runFn4)
 import Data.Maybe (Maybe(..))
+import Data.Monoid (mempty)
 import Data.Nullable (Nullable, toNullable)
 import Network.HTTP.Affjax (AffjaxResponse, AJAX)
 import Network.HTTP.ResponseHeader (ResponseHeader, responseHeader)
@@ -78,7 +80,7 @@ affjax
   => MonadAff (ajax :: AJAX | eff) m
   => AjaxRequest
   -> m (AffjaxResponse String)
-affjax req = toAjaxError <=< liftAff <<< toEither <<< makeAff' <<< ajax $ req
+affjax req = toAjaxError <=< liftAff <<< toEither $ makeAff \cb -> ajax req (cb <<< Left) (cb <<< Right)
   where
     toEither :: forall a. Aff (ajax :: AJAX | eff) a -> Aff (ajax :: AJAX | eff) (Either String a)
     toEither action = catchError (Right <$> action) $ \e ->
@@ -109,7 +111,7 @@ foreign import _ajax
                (Eff (ajax :: AJAX | e) (Canceler (ajax :: AJAX | e)))
 
 cancelAjax :: forall e. XMLHttpRequest -> Canceler (ajax :: AJAX | e)
-cancelAjax xhr = Canceler \err -> makeAff (\eb cb -> runFn4 _cancelAjax xhr err eb cb)
+cancelAjax xhr = Canceler \err -> makeAff (\cb -> mempty <$ runFn4 _cancelAjax xhr err (cb <<< Left) (const <<< cb $ Right unit))
 
 foreign import _cancelAjax
   :: forall e. Fn4 XMLHttpRequest
