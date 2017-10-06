@@ -13,8 +13,8 @@ import Data.Generic (class Generic, GenericSpine(SString), toSpine)
 import Global (encodeURIComponent)
 
 
--- | WARNING: encodeJson, decodeJson, toURLPiece have to be wrapped in newtype. See:
---   https://github.com/purescript/purescript/issues/1957
+-- encodeJson, decodeJson, toURLPiece have to be wrapped in newtype. See:
+-- https://github.com/purescript/purescript/issues/1957
 
 newtype SPSettingsEncodeJson_ = SPSettingsEncodeJson_ (forall a. Generic a => a -> Json)
 newtype SPSettingsDecodeJson_ = SPSettingsDecodeJson_ (forall a. Generic a => Json -> Either String a)
