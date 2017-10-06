@@ -11,7 +11,7 @@ import Data.Generic (class Generic)
 import Network.HTTP.Affjax (AffjaxResponse)
 import Network.HTTP.StatusCode (StatusCode(..))
 import Servant.PureScript.Affjax (makeAjaxError, AjaxError, ErrorDescription(DecodingError, ParsingError, UnexpectedHTTPStatus), AjaxRequest)
-import Servant.PureScript.Settings (gDefaultEncodeHeader, gDefaultEncodeURLPiece, SPSettings_(SPSettings_))
+import Servant.PureScript.Settings (SPSettings_(SPSettings_), SPSettingsToUrlPiece_(SPSettingsToUrlPiece_), SPSettingsEncodeHeader_(SPSettingsEncodeHeader_))
 
 -- | Get the result of a request.
 -- |
@@ -45,11 +45,10 @@ encodeQueryItem opts'@(SPSettings_ opts) fName val = fName <> "=" <> encodeURLPi
 
 -- | Call opts.toURLPiece and encode the resulting string with encodeURIComponent.
 encodeURLPiece :: forall a params. Generic a => SPSettings_ params -> a -> String
-encodeURLPiece (SPSettings_ opts) = gDefaultEncodeURLPiece
+encodeURLPiece (SPSettings_ opts) = case opts.toURLPiece of SPSettingsToUrlPiece_ f -> f
 
 encodeHeader :: forall a params. Generic a => SPSettings_ params -> a -> String
-encodeHeader (SPSettings_ opts) = gDefaultEncodeHeader
-
+encodeHeader (SPSettings_ opts) = case opts.encodeHeader of SPSettingsEncodeHeader_ f -> f
 
 reportRequestError :: AjaxRequest -> (String -> ErrorDescription) -> String -> String -> AjaxError
 reportRequestError req' err source msg = makeAjaxError req' $ reportError err source msg
